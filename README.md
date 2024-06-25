@@ -1,5 +1,18 @@
 # RankFlow
-RankFlow is a Python package that allows you to create rank flow plots, helping visualize the changes in ranking of nodes. Initially it was applied to re-ranking visualization of nodes (parts of documents, document chunks) during the retrieval and re-ranking processes within a Retrieval Augmented Generation (RAG) retriever but the usage is not limited to RAG.
+
+![](https://img.shields.io/pypi/v/rankflow.svg)
+![](https://img.shields.io/pypi/pyversions/rankflow.svg)
+![](https://img.shields.io/pypi/l/rankflow.svg)
+![](https://img.shields.io/pypi/dm/rankflow.svg)
+
+Library for plotting multiple ranks evolved over processing steps - drawing a rankflow.
+
+![RankFlow](https://github.com/izikeros/rankflow/blob/main/img/rankflow_crop.png)
+
+
+RankFlow is a Python package that allows you to create rank flow plots, helping visualize the changes in ranking of nodes. 
+
+Initially it was applied to re-ranking visualization of nodes (parts of documents, document chunks) during the retrieval and re-ranking processes within a Retrieval Augmented Generation (RAG) retriever but the usage is not limited to RAG.
 
 ## Installation
 ```bash
@@ -52,4 +65,8 @@ pip install rankflow
 
 This should produce the following plot:
 
-![RankFlow](./img/rankflow.png)
+![RankFlow](https://github.com/izikeros/rankflow/blob/main/img/rankflow.png)
+
+## License
+
+[MIT](LICENSE) © [Krystian Safjan](https://safjan.com/).
