@@ -31,6 +31,9 @@ classifiers = [
 "Source" = "https://github.com/izikeros/rankflow"
 "Bug Tracker" = "https://github.com/izikeros/rankflow/issues"
 
+[project.optional-dependencies]
+socks = ["pandas"]
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
@@ -43,4 +46,6 @@ distribution = true
 dev = [
     "black>=24.4.2",
     "isort>=5.13.2",
+    "pandas>=2.2.2",
+    "pytest>=8.2.2",
 ]
