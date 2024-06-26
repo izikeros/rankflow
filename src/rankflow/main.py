@@ -246,12 +246,12 @@ class RankFlow:
 
     def _generate_default_chunk_labels(self, chunk_labels: Optional[List[str]] = None):
         if chunk_labels is None:
-            self.chunk_labels = [f"Chunk {i}" for i in range(self.ranks.shape[1])]
+            return [f"Chunk {i}" for i in range(self.ranks.shape[1])]
         else:
-            self.chunk_labels = chunk_labels
+            return chunk_labels
 
     def _generate_default_step_labels(self, step_labels: Optional[List[str]] = None):
         if step_labels is None:
-            self.step_labels = [f"Step {i}" for i in range(self.ranks.shape[0])]
+            return [f"Step {i}" for i in range(self.ranks.shape[0])]
         else:
-            self.step_labels = step_labels
+            return step_labels
