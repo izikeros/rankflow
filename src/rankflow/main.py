@@ -35,7 +35,14 @@ config = {
 
 
 class RankFlow:
-    def __init__(self, ranks, step_labels, chunk_labels, **kwargs):
+    def __init__(self, ranks=None, step_labels=None, chunk_labels=None, df=None, **kwargs):
+        if df is not None:
+            ranks = df.to_numpy()
+            step_labels = df.index.to_list()
+            chunk_labels = df.columns.to_list()
+        else:
+            if ranks is None:
+                raise ValueError("ranks must be provided if not providing dataframe.")
         self.ranks = ranks
         self.step_labels = self._generate_default_step_labels(step_labels)
         self.chunk_labels = self._generate_default_chunk_labels(chunk_labels)
