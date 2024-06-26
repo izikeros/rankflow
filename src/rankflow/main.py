@@ -2,6 +2,7 @@
 from typing import List, Optional
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Configuration variables
 config = {
@@ -131,9 +132,10 @@ class RankFlow:
                 linestyle="--",
                 linewidth=vertical_line_width,
             )
+            step_text_y = 1.1 * np.max(self.ranks)
             self.axs.text(
                 i - 1,
-                len(self.chunk_labels),
+                step_text_y,
                 self.step_labels[i - 1],
                 fontsize=step_label_font_size,
                 ha="center",
@@ -204,11 +206,14 @@ class RankFlow:
             n_steps: The number of steps.
         """
         n_steps = len(self.step_labels)
+        # set plot title
         self.axs.set_title(
             "Rank evolution",
             fontsize=self.config["title_font_size"],
             pad=self.config["title_pad"],
         )
+
+        # add initial and final ranking labels
         self.axs.text(
             -self.config["x_axis_limit_offset"],
             -0.75,
@@ -223,6 +228,8 @@ class RankFlow:
             fontsize=self.config["initial_final_ranking_font_size"],
             ha="left",
         )
+
+        # set x-axis limits and remove ticks and spines
         self.axs.set_xlim(
             -self.config["x_axis_limit_offset"],
             n_steps - 1 + self.config["x_axis_limit_offset"],
@@ -231,6 +238,8 @@ class RankFlow:
         self.axs.set_yticks([])
         for spine in self.axs.spines.values():
             spine.set_visible(False)
+
+        # add caption
         plt.figtext(
             0.5,
             0.02,
