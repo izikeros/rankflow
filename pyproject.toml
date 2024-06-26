@@ -1,6 +1,6 @@
 [project]
 name = "rankflow"
-version = "0.1.1"
+version = "0.1.2"
 description = "Plot how multiple ranks evolved over processing steps - draw a rankflow."
 authors = [
     {name = "Krystian Safjan", email = "ksafjan@gmail.com"},
