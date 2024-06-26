@@ -13,24 +13,6 @@ All notable changes to this project will be documented in this file.
 
 - Fix automatic label generation
 
-### 📚 Documentation
-
-- Add more examples to README
-
-### 🎨 Styling
-
-- Add comments, reformat
-
-### 🧪 Testing
-
-- Add more tests
-
-### Build
-
-- Add optional dependencies
-- Bump-up version
-- Update pdm.lock
-
 ## [0.1.1] - 2024-06-25
 
 ### ⚙️ Miscellaneous Tasks
