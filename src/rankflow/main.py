@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Configuration variables
 config = {
-    "fig_size": (10, 5),
+    "fig_size": None,
     "colors": [
         "blue",
         "green",
@@ -71,7 +71,18 @@ class RankFlow:
         Returns:
             axs: The Axes object for the subplot.
         """
-        _, self.axs = plt.subplots(nrows=1, ncols=1, figsize=self.config["fig_size"])
+
+        user_fig_size = self.config.get("fig_size", config["fig_size"])
+        if user_fig_size is None:
+            n_docs = self.ranks.shape[1]
+            n_steps = self.ranks.shape[0]
+            x_size = max(5, 1.5 * n_steps)
+            y_size = max(5, 0.5 * n_docs)
+            fig_size = (x_size, y_size)
+        else:
+            fig_size = user_fig_size
+
+        _, self.axs = plt.subplots(nrows=1, ncols=1, figsize=fig_size)
         self.axs.invert_yaxis()
 
     def _plot_rank_evolution(self) -> None:
