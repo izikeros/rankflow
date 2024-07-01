@@ -3,7 +3,7 @@ GIT_ROOT ?= $(shell git rev-parse --show-toplevel)
 help: ## Show all Makefile targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[33m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: format lint type style clean run-benchmarks
+.PHONY: format lint type clean
 format: ## Running code formatter: black and isort
 	@echo "(isort) Ordering imports..."
 	@isort .
@@ -30,3 +30,5 @@ test: ## Run tests
 test-e2e: ## Run end2end tests
 	echo "running end2end tests..."
 	@pytest tests/e2e -s
+changelog: CHANGELOG.md ## (git-cliff) create changelog
+	@git-cliff -o CHANGELOG.md -c cliff.toml
