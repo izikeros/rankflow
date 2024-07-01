@@ -7,7 +7,7 @@
 
 Library for plotting multiple ranks evolved over processing steps - drawing a rankflow.
 
-![RankFlow](./img/rankflow_crop.png)
+![RankFlow](https://raw.githubusercontent.com/izikeros/rankflow/main/img/rankflow_crop.png)
 
 RankFlow is a Python package that allows you to create rank flow plots (bump charts), helping visualize the changes in ranking of nodes.
 
@@ -35,11 +35,11 @@ df = pd.DataFrame(data, index=["Step_1", "Step_2", "Step_3", "Step_4"])
 ```
 This creates the following DataFrame:
 
-![](./img/dataframe.png)
+![](https://raw.githubusercontent.com/izikeros/rankflow/main/img/dataframe.png)
 
 **NOTE:** The rows of the DataFrame are the steps and the columns are the documents. The values are the ranks of the documents at each step. Remember to define proper column names and index values since they will be used as labels in the plot.
 
-When the DtaFrame is ready, then it is time to create RankFlow object and call `plot()` method.
+When the DataFrame is ready, then it is time to create RankFlow object and call `plot()` method.
 
 ```python
 rf = RankFlow(df=df)
@@ -52,7 +52,7 @@ plt.show()
 ```
 Here is the expected output:
 
-![](./img/rankflow_basic_pandas.png)
+![](https://raw.githubusercontent.com/izikeros/rankflow/main/img/rankflow_basic_pandas.png)
 
 ### plot from numpy array
 You can also create RankFlow object without using pandas DataFrame. You can pass numpy array with ranks for each document at each step and provide labels for steps and documents.
@@ -101,7 +101,7 @@ plt.show()
 
 This should produce the following plot:
 
-![RankFlow](./img/rankflow.png)
+![RankFlow](https://raw.githubusercontent.com/izikeros/rankflow/main/img/rankflow.png)
 
 ## License
 
