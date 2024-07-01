@@ -13,6 +13,8 @@ RankFlow is a Python package that allows you to create rank flow plots (bump cha
 
 Initially it was applied to re-ranking visualization of nodes (parts of documents, document chunks) during the retrieval and re-ranking processes within a Retrieval Augmented Generation (RAG) retriever, but the usage is not limited to RAG.
 
+⭐️ Please star the repository if you find it useful.
+
 ## Installation
 
 ```bash
