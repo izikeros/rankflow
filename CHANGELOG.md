@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2024-07-01
+
+### ⚙️ Miscellaneous Tasks
+
+- Add git-cliff config
+- Remove extra targets from Makefile
+
 ## [0.1.2] - 2024-06-26
 
 ### 🚀 Features
