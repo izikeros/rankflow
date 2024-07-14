@@ -105,6 +105,10 @@ This should produce the following plot:
 
 ![RankFlow](https://raw.githubusercontent.com/izikeros/rankflow/main/img/rankflow.png)
 
+## Further reading
+
+There is and blog article describing usage of this package in RAG retriever: [RankFlow plot for retriever visual evaluation](https://safjan.com/rankflow-plot-for-retriever-visual-evaluation/) that might be helpful if you are wondering how to efficienty track rank changes in your retriever and finally visualize them.
+
 ## License
 
 [MIT](LICENSE) © [Krystian Safjan](https://safjan.com/).
