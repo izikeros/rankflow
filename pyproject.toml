@@ -1,7 +1,7 @@
 [project]
 name = "rankflow"
-version = "0.1.4"
-description = "Plot how multiple ranks evolved over processing steps - draw a rankflow."
+version = "0.2.0"
+description = "Visualize and evaluate rank evolution across retrieval steps - rankflow plots, retrieval metrics, and pipeline comparison for RAG."
 authors = [
     {name = "Krystian Safjan", email = "ksafjan@gmail.com"},
 ]
@@ -32,7 +32,10 @@ classifiers = [
 "Bug Tracker" = "https://github.com/izikeros/rankflow/issues"
 
 [project.optional-dependencies]
-socks = ["pandas"]
+pandas = ["pandas"]
+interactive = ["plotly>=5.0"]
+ranx = ["ranx>=0.3"]
+ragas = ["ragas>=0.1"]
 
 [build-system]
 requires = ["pdm-backend"]

@@ -165,3 +165,5 @@ tests/e2e/*.png
 tests/e2e/*.gif
 tests/e2e/*.jpg
 test_results.json
+output.json
+rankflow_output.json
