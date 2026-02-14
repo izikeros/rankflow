@@ -1,54 +1,151 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "rankflow"
 version = "0.2.0"
 description = "Visualize and evaluate rank evolution across retrieval steps - rankflow plots, retrieval metrics, and pipeline comparison for RAG."
-authors = [
-    {name = "Krystian Safjan", email = "ksafjan@gmail.com"},
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+authors = [{name = "Krystian Safjan", email = "ksafjan@gmail.com"}]
+keywords = [
+    "rankflow",
+    "rank",
+    "flow",
+    "plot",
+    "RAG",
+    "retriever",
+    "evaluation",
+    "rag-evaluation",
+    "rag-eval",
+    "visualization",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
 ]
 dependencies = [
     "matplotlib>=3.9.0",
     "numpy>=1.26.4",
 ]
-requires-python = ">=3.9"
-readme = "README.md"
-license = {text = "MIT"}
-keywords = ["rankflow", "rank", "flow", "plot", "RAG", "retriever", "evaluation", "rag-evaluation", "rag-eval", "rag-eval-plot", "rag-evaluation-plot"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Utilities",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Scientific/Engineering :: Information Analysis",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Scientific/Engineering :: Visualization",
-    "Topic :: Scientific/Engineering :: Mathematics",
-    ]
-[project.urls]
-"Source" = "https://github.com/izikeros/rankflow"
-"Bug Tracker" = "https://github.com/izikeros/rankflow/issues"
 
 [project.optional-dependencies]
-pandas = ["pandas"]
+pandas = ["pandas>=2.0"]
 interactive = ["plotly>=5.0"]
 ranx = ["ranx>=0.3"]
 ragas = ["ragas>=0.1"]
-
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "black>=24.4.2",
-    "isort>=5.13.2",
-    "pandas>=2.2.2",
-    "pytest>=8.2.2",
+all = [
+    "pandas>=2.0",
+    "plotly>=5.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/izikeros/rankflow"
+Documentation = "https://izikeros.github.io/rankflow"
+Repository = "https://github.com/izikeros/rankflow"
+"Bug Tracker" = "https://github.com/izikeros/rankflow/issues"
+Changelog = "https://github.com/izikeros/rankflow/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.9.0",
+    "ty>=0.0.1a23",
+    "pre-commit>=3.0.0",
+    "bandit[toml]>=1.7.5",
+    "pip-audit>=2.6.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
+    "bump-my-version>=0.28.0",
+    "git-cliff>=2.0.0",
+    "commitizen>=4.1.0",
+    "pandas>=2.0",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.24.0",
+    "mkdocs-jupyter>=0.25.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rankflow"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+]
+
+[tool.bumpversion]
+current_version = "0.2.0"
+commit = true
+tag = true
+tag_name = "v{new_version}"
+message = "chore(release): bump version {current_version} → {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/rankflow/_version.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+show_missing = true
+precision = 2
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.2.0"
+tag_format = "v$version"
+allowed_prefixes = ["Merge", "Revert", "Initial"]
