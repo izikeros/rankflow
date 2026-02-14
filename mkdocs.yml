@@ -1,0 +1,76 @@
+site_name: rankflow
+site_url: https://izikeros.github.io/rankflow
+site_description: Visualize and evaluate rank evolution across retrieval steps - rankflow plots, retrieval metrics, and pipeline comparison for RAG.
+site_author: Krystian Safjan
+
+repo_url: https://github.com/izikeros/rankflow
+repo_name: izikeros/rankflow
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Tutorials:
+      - tutorials/index.md
+      - Quickstart: tutorials/01_quickstart.ipynb
+      - Metrics & Analysis: tutorials/02_metrics_and_analysis.ipynb
+      - Advanced Visualization: tutorials/03_advanced_visualization.ipynb
+      - Batch Evaluation: tutorials/04_batch_evaluation.ipynb
+      - Adapters & Export: tutorials/05_adapters_and_export.ipynb
+  - API Reference: api.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/izikeros
+    - icon: fontawesome/solid/globe
+      link: https://safjan.com
