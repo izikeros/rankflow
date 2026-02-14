@@ -4,11 +4,13 @@ from rankflow.analysis import compute_rank_deltas, compute_summary, filter_top_k
 
 
 def _sample_ranks():
-    return np.array([
-        [0, 1, 2, 3],
-        [2, 0, 1, 3],
-        [3, 1, 0, 2],
-    ])
+    return np.array(
+        [
+            [0, 1, 2, 3],
+            [2, 0, 1, 3],
+            [3, 1, 0, 2],
+        ]
+    )
 
 
 def test_compute_rank_deltas_shape():
@@ -37,32 +39,40 @@ def test_compute_summary():
 
 
 def test_filter_top_k_any():
-    ranks = np.array([
-        [0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0],
-    ])
+    ranks = np.array(
+        [
+            [0, 1, 2, 3, 4],
+            [4, 3, 2, 1, 0],
+        ]
+    )
     labels = ["A", "B", "C", "D", "E"]
-    _filtered_ranks, filtered_labels, _kept = filter_top_k(ranks, labels, k=2, mode="any")
+    _filtered_ranks, filtered_labels, _kept = filter_top_k(
+        ranks, labels, k=2, mode="any"
+    )
     # Top-2 at step 0: A, B; top-2 at step 1: E, D => keep A, B, D, E
     assert len(filtered_labels) == 4
     assert "C" not in filtered_labels
 
 
 def test_filter_top_k_initial():
-    ranks = np.array([
-        [0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0],
-    ])
+    ranks = np.array(
+        [
+            [0, 1, 2, 3, 4],
+            [4, 3, 2, 1, 0],
+        ]
+    )
     labels = ["A", "B", "C", "D", "E"]
     _, filtered_labels, _ = filter_top_k(ranks, labels, k=2, mode="initial")
     assert filtered_labels == ["A", "B"]
 
 
 def test_filter_top_k_final():
-    ranks = np.array([
-        [0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0],
-    ])
+    ranks = np.array(
+        [
+            [0, 1, 2, 3, 4],
+            [4, 3, 2, 1, 0],
+        ]
+    )
     labels = ["A", "B", "C", "D", "E"]
     _, filtered_labels, _ = filter_top_k(ranks, labels, k=2, mode="final")
     assert filtered_labels == ["D", "E"]

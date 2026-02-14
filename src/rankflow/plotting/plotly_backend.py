@@ -47,8 +47,12 @@ class PlotlyBackend(PlotBackend):
         for i in range(n_chunks):
             is_relevant = has_relevance and i in relevant_indices
             alpha = 1.0 if (not has_relevance or is_relevant) else 0.2
-            lw = config.line_width * 0.3 if not has_relevance else (
-                config.line_width * 0.4 if is_relevant else config.line_width * 0.15
+            lw = (
+                config.line_width * 0.3
+                if not has_relevance
+                else (
+                    config.line_width * 0.4 if is_relevant else config.line_width * 0.15
+                )
             )
             color = colors[i % n_colors]
 

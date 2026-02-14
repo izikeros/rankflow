@@ -38,7 +38,9 @@ def test_metrics_with_relevant():
     m = rf.metrics(k=2)
     assert m is not None
     assert len(m) == 2
-    assert m[0]["precision_at_k"] == 0.5  # A is at rank 0, top-2 = {A, B}, 1 relevant / 2
+    assert (
+        m[0]["precision_at_k"] == 0.5
+    )  # A is at rank 0, top-2 = {A, B}, 1 relevant / 2
 
 
 def test_summary():

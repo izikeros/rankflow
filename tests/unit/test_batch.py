@@ -6,10 +6,12 @@ from rankflow.core import RankFlow
 
 
 def _make_rf(relevant=None):
-    ranks = np.array([
-        [0, 1, 2, 3],
-        [1, 0, 3, 2],
-    ])
+    ranks = np.array(
+        [
+            [0, 1, 2, 3],
+            [1, 0, 3, 2],
+        ]
+    )
     return RankFlow(
         ranks=ranks,
         step_labels=["BM25", "Cross-encoder"],

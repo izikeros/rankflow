@@ -61,10 +61,16 @@ def test_merge_rankflow_merge_steps():
 
 def test_invalid_parent_ref():
     with pytest.raises(ValueError, match="unknown parent"):
-        MergeRankFlow(steps=[
-            PipelineStep("A", ranks=np.array([0, 1]), chunk_labels=["x", "y"],
-                         parents=["nonexistent"]),
-        ])
+        MergeRankFlow(
+            steps=[
+                PipelineStep(
+                    "A",
+                    ranks=np.array([0, 1]),
+                    chunk_labels=["x", "y"],
+                    parents=["nonexistent"],
+                ),
+            ]
+        )
 
 
 def test_overlap_analysis():

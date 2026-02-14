@@ -15,6 +15,7 @@ from rankflow.core import RankFlow
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def simple_rf():
     """A minimal 2-step, 3-chunk RankFlow for export/import tests."""
@@ -33,31 +34,37 @@ def trec_run_dir(tmp_path):
     """Create two TREC run files (two steps) and a qrels file."""
     # BM25 run
     bm25 = tmp_path / "bm25.run"
-    bm25.write_text(textwrap.dedent("""\
+    bm25.write_text(
+        textwrap.dedent("""\
         q1 Q0 doc_a 0 0.9 bm25
         q1 Q0 doc_b 1 0.7 bm25
         q1 Q0 doc_c 2 0.3 bm25
         q2 Q0 doc_b 0 0.8 bm25
         q2 Q0 doc_d 1 0.6 bm25
-    """))
+    """)
+    )
 
     # Reranker run
     reranker = tmp_path / "reranker.run"
-    reranker.write_text(textwrap.dedent("""\
+    reranker.write_text(
+        textwrap.dedent("""\
         q1 Q0 doc_b 0 0.95 reranker
         q1 Q0 doc_a 1 0.5 reranker
         q1 Q0 doc_c 2 0.1 reranker
         q2 Q0 doc_d 0 0.9 reranker
         q2 Q0 doc_b 1 0.7 reranker
-    """))
+    """)
+    )
 
     # Qrels
     qrels = tmp_path / "qrels.txt"
-    qrels.write_text(textwrap.dedent("""\
+    qrels.write_text(
+        textwrap.dedent("""\
         q1 0 doc_a 2
         q1 0 doc_c 1
         q2 0 doc_d 1
-    """))
+    """)
+    )
 
     return tmp_path
 
@@ -65,6 +72,7 @@ def trec_run_dir(tmp_path):
 # ---------------------------------------------------------------------------
 # TREC adapter
 # ---------------------------------------------------------------------------
+
 
 class TestTRECAdapter:
     def test_load_single_query(self, trec_run_dir):
@@ -81,6 +89,7 @@ class TestTRECAdapter:
 
     def test_load_multi_query_returns_batch(self, trec_run_dir):
         from rankflow.batch import BatchRankFlow
+
         result = RankFlow.from_trec_run(
             [trec_run_dir / "bm25.run", trec_run_dir / "reranker.run"],
             qrels_path=trec_run_dir / "qrels.txt",
@@ -117,6 +126,7 @@ class TestTRECAdapter:
 
     def test_load_trec_qrels(self, trec_run_dir):
         from rankflow.adapters.trec import load_trec_qrels
+
         qrels = load_trec_qrels(trec_run_dir / "qrels.txt")
         assert "q1" in qrels
         assert qrels["q1"]["doc_a"] == 2
@@ -126,6 +136,7 @@ class TestTRECAdapter:
 # ---------------------------------------------------------------------------
 # JSON adapter
 # ---------------------------------------------------------------------------
+
 
 class TestJSONAdapter:
     def test_save_and_load(self, simple_rf, tmp_path):
@@ -193,6 +204,7 @@ class TestJSONAdapter:
 # ranx adapter (mocked -- ranx may not be installed)
 # ---------------------------------------------------------------------------
 
+
 class TestRanxAdapter:
     def test_from_ranx_mocked(self):
         """Test adapter logic with mocked ranx objects."""
@@ -235,6 +247,7 @@ class TestRanxAdapter:
 # RAGAS adapter (mocked -- ragas may not be installed)
 # ---------------------------------------------------------------------------
 
+
 class TestRagasAdapter:
     def test_from_ragas_dict_samples(self):
         """Test with dict-based samples (no ragas import needed)."""
@@ -265,6 +278,7 @@ class TestRagasAdapter:
         ]
 
         from rankflow.batch import BatchRankFlow
+
         result = from_ragas(samples)
         assert isinstance(result, BatchRankFlow)
         assert len(result.rankflows) == 2
@@ -286,11 +300,13 @@ class TestRagasAdapter:
 
     def test_from_ragas_empty_raises(self):
         from rankflow.adapters.ragas_adapter import from_ragas
+
         with pytest.raises(ValueError, match="No valid samples"):
             from_ragas([{"user_input": "q", "retrieved_contexts": []}])
 
     def test_from_ragas_no_reference(self):
         from rankflow.adapters.ragas_adapter import from_ragas
+
         samples = [
             {
                 "user_input": "query",

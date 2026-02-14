@@ -20,7 +20,9 @@ def _make_rf(seed=42, relevant=None):
 
 
 def _make_batch(n=10):
-    return BatchRankFlow([_make_rf(seed=i, relevant=["Doc_0", "Doc_1"]) for i in range(n)])
+    return BatchRankFlow(
+        [_make_rf(seed=i, relevant=["Doc_0", "Doc_1"]) for i in range(n)]
+    )
 
 
 def test_win_loss_analysis():

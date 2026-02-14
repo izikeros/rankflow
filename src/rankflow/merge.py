@@ -110,20 +110,26 @@ class MergeRankFlow:
             # Exclusive to each parent
             exclusive = {}
             for pname, pset in parent_sets.items():
-                others = set.union(*(s for n, s in parent_sets.items() if n != pname)) if len(parent_sets) > 1 else set()
+                others = (
+                    set.union(*(s for n, s in parent_sets.items() if n != pname))
+                    if len(parent_sets) > 1
+                    else set()
+                )
                 exclusive[pname] = pset - others
 
             total_unique = set.union(*all_sets) if all_sets else set()
 
-            results.append({
-                "merge_step": merge_name,
-                "parents": parent_names,
-                "shared": shared,
-                "shared_count": len(shared),
-                "exclusive": dict(exclusive),
-                "exclusive_counts": {p: len(ex) for p, ex in exclusive.items()},
-                "total_unique": len(total_unique),
-            })
+            results.append(
+                {
+                    "merge_step": merge_name,
+                    "parents": parent_names,
+                    "shared": shared,
+                    "shared_count": len(shared),
+                    "exclusive": dict(exclusive),
+                    "exclusive_counts": {p: len(ex) for p, ex in exclusive.items()},
+                    "total_unique": len(total_unique),
+                }
+            )
         return results
 
     # ------------------------------------------------------------------
@@ -152,32 +158,40 @@ class MergeRankFlow:
                     set2 = set(p2.chunk_labels)
                     common = set1 & set2
                     if len(common) < 2:
-                        results.append({
-                            "merge_step": merge_name,
-                            "parent_pair": (parents[i], parents[j]),
-                            "common_docs": len(common),
-                            "spearman_rho": None,
-                        })
+                        results.append(
+                            {
+                                "merge_step": merge_name,
+                                "parent_pair": (parents[i], parents[j]),
+                                "common_docs": len(common),
+                                "spearman_rho": None,
+                            }
+                        )
                         continue
 
                     # Build rank vectors for common docs
-                    label_to_rank1 = dict(zip(p1.chunk_labels, p1.ranks))
-                    label_to_rank2 = dict(zip(p2.chunk_labels, p2.ranks))
+                    label_to_rank1 = dict(zip(p1.chunk_labels, p1.ranks, strict=True))
+                    label_to_rank2 = dict(zip(p2.chunk_labels, p2.ranks, strict=True))
                     common_sorted = sorted(common)
-                    r1 = np.array([label_to_rank1[c] for c in common_sorted], dtype=float)
-                    r2 = np.array([label_to_rank2[c] for c in common_sorted], dtype=float)
+                    r1 = np.array(
+                        [label_to_rank1[c] for c in common_sorted], dtype=float
+                    )
+                    r2 = np.array(
+                        [label_to_rank2[c] for c in common_sorted], dtype=float
+                    )
 
                     # Spearman rho (rank correlation)
                     n = len(common_sorted)
                     d_sq = np.sum((r1 - r2) ** 2)
                     rho = 1 - (6 * d_sq) / (n * (n**2 - 1))
 
-                    results.append({
-                        "merge_step": merge_name,
-                        "parent_pair": (parents[i], parents[j]),
-                        "common_docs": n,
-                        "spearman_rho": float(rho),
-                    })
+                    results.append(
+                        {
+                            "merge_step": merge_name,
+                            "parent_pair": (parents[i], parents[j]),
+                            "common_docs": n,
+                            "spearman_rho": float(rho),
+                        }
+                    )
         return results
 
     # ------------------------------------------------------------------
@@ -232,8 +246,20 @@ class MergeRankFlow:
     def _assign_chunk_colors(self, top_k: int) -> dict[str, str]:
         """Assign consistent colors to chunks across steps."""
         colors = [
-            "blue", "green", "red", "purple", "orange", "brown", "pink",
-            "gray", "olive", "cyan", "magenta", "lime", "teal", "navy",
+            "blue",
+            "green",
+            "red",
+            "purple",
+            "orange",
+            "brown",
+            "pink",
+            "gray",
+            "olive",
+            "cyan",
+            "magenta",
+            "lime",
+            "teal",
+            "navy",
         ]
         chunk_color: dict[str, str] = {}
         color_idx = 0
@@ -250,7 +276,7 @@ class MergeRankFlow:
         for step_name in self._step_order:
             step = self.steps[step_name]
             x_pos = step_x[step_name]
-            label_to_rank = dict(zip(step.chunk_labels, step.ranks))
+            label_to_rank = dict(zip(step.chunk_labels, step.ranks, strict=True))
             top_labels = step.top_k_labels[:top_k]
 
             for label in top_labels:
@@ -266,12 +292,19 @@ class MergeRankFlow:
                 )
 
             # Label top docs at leaf steps (no children)
-            is_leaf = not any(step_name in self.steps[s].parents for s in self._step_order)
+            is_leaf = not any(
+                step_name in self.steps[s].parents for s in self._step_order
+            )
             if is_leaf:
                 for label in top_labels:
                     ax.text(
-                        x_pos + 0.1, label_to_rank[label], label,
-                        fontsize=7, ha="left", va="center", alpha=0.7,
+                        x_pos + 0.1,
+                        label_to_rank[label],
+                        label,
+                        fontsize=7,
+                        ha="left",
+                        va="center",
+                        alpha=0.7,
                     )
 
     def _draw_parent_connections(
@@ -280,19 +313,29 @@ class MergeRankFlow:
         """Draw lines from parent steps to the current step for a given doc."""
         for parent_name in step.parents:
             parent = self.steps[parent_name]
-            parent_label_to_rank = dict(zip(parent.chunk_labels, parent.ranks))
+            parent_label_to_rank = dict(
+                zip(parent.chunk_labels, parent.ranks, strict=True)
+            )
             if label in parent_label_to_rank:
                 parent_rank = parent_label_to_rank[label]
                 if parent_rank < top_k:
                     ax.plot(
-                        [step_x[parent_name], x_pos], [parent_rank, rank],
-                        color=color, alpha=alpha, linewidth=lw, solid_capstyle="round",
+                        [step_x[parent_name], x_pos],
+                        [parent_rank, rank],
+                        color=color,
+                        alpha=alpha,
+                        linewidth=lw,
+                        solid_capstyle="round",
                     )
             else:
                 ax.plot(
-                    [x_pos - 0.3, x_pos], [rank, rank],
-                    color=color, alpha=alpha * 0.5, linewidth=lw,
-                    linestyle="--", solid_capstyle="round",
+                    [x_pos - 0.3, x_pos],
+                    [rank, rank],
+                    color=color,
+                    alpha=alpha * 0.5,
+                    linewidth=lw,
+                    linestyle="--",
+                    solid_capstyle="round",
                 )
 
     def _compute_levels(self) -> dict[str, int]:

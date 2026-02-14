@@ -94,6 +94,7 @@ class MatplotlibBackend(PlotBackend):
         if has_relevance and relevance_grades:
             try:
                 import matplotlib.cm as cm
+
                 cmap = cm.get_cmap(config.relevance_colormap)
                 max_grade = max(relevance_grades.values()) if relevance_grades else 1
                 min_grade = min(relevance_grades.values()) if relevance_grades else 0
@@ -109,9 +110,15 @@ class MatplotlibBackend(PlotBackend):
             # Determine line style based on relevance
             if has_relevance:
                 is_relevant = i in relevant_indices
-                alpha = config.relevant_line_alpha if is_relevant else config.irrelevant_line_alpha
+                alpha = (
+                    config.relevant_line_alpha
+                    if is_relevant
+                    else config.irrelevant_line_alpha
+                )
                 lw = config.line_width * (
-                    config.relevant_line_width_multiplier if is_relevant else config.irrelevant_line_width_multiplier
+                    config.relevant_line_width_multiplier
+                    if is_relevant
+                    else config.irrelevant_line_width_multiplier
                 )
             else:
                 alpha = 0.7
@@ -132,9 +139,23 @@ class MatplotlibBackend(PlotBackend):
                 for seg_x, seg_y, is_absent in segments:
                     ls = config.absent_line_style if is_absent else "-"
                     a = config.absent_line_alpha if is_absent else alpha
-                    axs.plot(seg_x, seg_y, color=color, alpha=a, linewidth=lw, linestyle=ls, solid_capstyle="round")
+                    axs.plot(
+                        seg_x,
+                        seg_y,
+                        color=color,
+                        alpha=a,
+                        linewidth=lw,
+                        linestyle=ls,
+                        solid_capstyle="round",
+                    )
             else:
-                axs.plot(y_data, color=color, alpha=alpha, linewidth=lw, solid_capstyle="round")
+                axs.plot(
+                    y_data,
+                    color=color,
+                    alpha=alpha,
+                    linewidth=lw,
+                    solid_capstyle="round",
+                )
 
             # Score overlay
             if scores is not None and config.score_mode in ("scores", "dual"):
@@ -204,7 +225,9 @@ class MatplotlibBackend(PlotBackend):
                 ha="left",
             )
 
-    def _add_rank_text(self, axs, ranks, step_labels, chunk_labels, config, absent_mask):
+    def _add_rank_text(
+        self, axs, ranks, step_labels, chunk_labels, config, absent_mask
+    ):
         n_steps = len(step_labels)
         n_chunks = len(chunk_labels)
         for i in range(n_steps):
@@ -402,11 +425,20 @@ class MatplotlibBackend(PlotBackend):
                     color = config.source_colors[src]
 
             y_data = ranks[:, i].astype(float)
-            axs.plot(y_data, color=color, alpha=alpha, linewidth=lw, solid_capstyle="round")
+            axs.plot(
+                y_data, color=color, alpha=alpha, linewidth=lw, solid_capstyle="round"
+            )
 
             if marker:
                 for s in range(n_steps):
-                    axs.plot(s, y_data[s], marker=marker, color=color, markersize=6, alpha=alpha)
+                    axs.plot(
+                        s,
+                        y_data[s],
+                        marker=marker,
+                        color=color,
+                        markersize=6,
+                        alpha=alpha,
+                    )
 
             # Label at the end
             axs.text(
@@ -422,18 +454,32 @@ class MatplotlibBackend(PlotBackend):
 
         # Legend for density bands
         from matplotlib.patches import Patch
+
         legend_elements = [
-            Patch(facecolor=config.density_band_color, alpha=config.density_band_alpha * 2,
-                  label="Rank 25-75th pctl"),
-            Patch(facecolor=config.density_band_color, alpha=config.density_band_alpha,
-                  label="Rank 10-90th pctl"),
+            Patch(
+                facecolor=config.density_band_color,
+                alpha=config.density_band_alpha * 2,
+                label="Rank 25-75th pctl",
+            ),
+            Patch(
+                facecolor=config.density_band_color,
+                alpha=config.density_band_alpha,
+                label="Rank 10-90th pctl",
+            ),
         ]
         if source_labels:
             for src, marker in config.source_markers.items():
                 c = config.source_colors.get(src, "black")
                 legend_elements.append(
-                    plt.Line2D([0], [0], marker=marker, color=c, linestyle="",
-                               markersize=6, label=f"Source: {src}")
+                    plt.Line2D(
+                        [0],
+                        [0],
+                        marker=marker,
+                        color=c,
+                        linestyle="",
+                        markersize=6,
+                        label=f"Source: {src}",
+                    )
                 )
         axs.legend(handles=legend_elements, loc="upper right", fontsize=8)
 

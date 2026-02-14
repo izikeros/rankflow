@@ -78,7 +78,6 @@ def test_df_1_col__1_rank():
     plt.show()
 
 
-
 def test_df_two_steps():
     import pandas as pd
 
@@ -112,7 +111,7 @@ def gen_data(n_docs: int, n_steps):
     data_matrix += 1
 
     # create dictionary with column names as keys and rows as values
-    data = {f"Doc {i+1}": data_matrix[:, i] for i in range(n_docs)}
+    data = {f"Doc {i + 1}": data_matrix[:, i] for i in range(n_docs)}
     return data
 
 

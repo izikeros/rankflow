@@ -123,7 +123,9 @@ def _extract_relevance(
         return None, None
     relevant_chunks = [d for d in all_docs if qrels[qid].get(d, 0) > 0]
     relevance_grades = {
-        d: float(qrels[qid][d]) for d in all_docs if d in qrels[qid] and qrels[qid][d] > 0
+        d: float(qrels[qid][d])
+        for d in all_docs
+        if d in qrels[qid] and qrels[qid][d] > 0
     }
     return relevant_chunks, relevance_grades
 
@@ -188,7 +190,9 @@ def save_trec_run(
 ) -> None:
     """Export a RankFlow step as a TREC run file."""
     ranks_row = rf.ranks[step_index]
-    scores_row = rf.scores[step_index] if rf.scores is not None else np.zeros_like(ranks_row)
+    scores_row = (
+        rf.scores[step_index] if rf.scores is not None else np.zeros_like(ranks_row)
+    )
     sorted_indices = np.argsort(ranks_row)
 
     with open(path, "w") as f:

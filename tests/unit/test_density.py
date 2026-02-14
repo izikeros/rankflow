@@ -19,10 +19,12 @@ def test_density_mode_runs():
         relevant_chunks=["Doc_0", "Doc_1", "Doc_2"],
     )
     import matplotlib
+
     matplotlib.use("Agg")
     fig, _ax = rf.plot(mode="density")
     assert fig is not None
     import matplotlib.pyplot as plt
+
     plt.close(fig)
 
 
@@ -50,8 +52,10 @@ def test_density_mode_with_source_labels():
         source_labels=source,
     )
     import matplotlib
+
     matplotlib.use("Agg")
     fig, _ax = rf.plot(mode="density")
     assert fig is not None
     import matplotlib.pyplot as plt
+
     plt.close(fig)

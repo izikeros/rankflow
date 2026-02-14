@@ -77,16 +77,20 @@ class PlotConfig:
     density_focus_k: int = 10
 
     # Source provenance
-    source_markers: dict[str, str] = field(default_factory=lambda: {
-        "text": "s",
-        "vector": "^",
-        "both": "o",
-    })
-    source_colors: dict[str, str] = field(default_factory=lambda: {
-        "text": "blue",
-        "vector": "red",
-        "both": "purple",
-    })
+    source_markers: dict[str, str] = field(
+        default_factory=lambda: {
+            "text": "s",
+            "vector": "^",
+            "both": "o",
+        }
+    )
+    source_colors: dict[str, str] = field(
+        default_factory=lambda: {
+            "text": "blue",
+            "vector": "red",
+            "both": "purple",
+        }
+    )
 
     @classmethod
     def from_kwargs(cls, **kwargs) -> PlotConfig:
@@ -98,6 +102,7 @@ class PlotConfig:
     def to_dict(self) -> dict:
         """Convert config to a plain dictionary."""
         from dataclasses import asdict
+
         return asdict(self)
 
     def override(self, **kwargs) -> PlotConfig:

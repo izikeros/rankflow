@@ -108,7 +108,9 @@ def from_ranx(
     from rankflow.core import RankFlow
 
     run_dicts = [r.to_dict() if hasattr(r, "to_dict") else dict(r) for r in runs]
-    labels = step_labels or [getattr(r, "name", f"Step {i}") for i, r in enumerate(runs)]
+    labels = step_labels or [
+        getattr(r, "name", f"Step {i}") for i, r in enumerate(runs)
+    ]
 
     qrels_dict: dict[str, dict[str, float]] | None = None
     if qrels is not None:
@@ -127,7 +129,9 @@ def from_ranx(
             continue
 
         ranks, scores = _build_ranx_matrices(qid, all_docs, run_dicts)
-        relevant_chunks, relevance_grades = _extract_ranx_relevance(qid, all_docs, qrels_dict)
+        relevant_chunks, relevance_grades = _extract_ranx_relevance(
+            qid, all_docs, qrels_dict
+        )
 
         rf = RankFlow(
             ranks=ranks,
@@ -150,6 +154,12 @@ def to_ranx_run(rf, step_index: int = -1, query_id: str = "q0") -> Any:
     _ensure_ranx()
     from ranx import Run
 
-    scores_row = rf.scores[step_index] if rf.scores is not None else -rf.ranks[step_index].astype(float)
-    doc_scores = {rf.chunk_labels[i]: float(scores_row[i]) for i in range(len(rf.chunk_labels))}
+    scores_row = (
+        rf.scores[step_index]
+        if rf.scores is not None
+        else -rf.ranks[step_index].astype(float)
+    )
+    doc_scores = {
+        rf.chunk_labels[i]: float(scores_row[i]) for i in range(len(rf.chunk_labels))
+    }
     return Run({query_id: doc_scores})

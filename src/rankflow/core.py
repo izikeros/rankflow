@@ -54,14 +54,22 @@ class RankFlow:
                 f"ranks must be a 2D array with shape (n_steps, n_chunks), "
                 f"got shape {self.ranks.shape}"
             )
-        self.step_labels = self._default_labels(step_labels, self.ranks.shape[0], "Step")
-        self.chunk_labels = self._default_labels(chunk_labels, self.ranks.shape[1], "Chunk")
+        self.step_labels = self._default_labels(
+            step_labels, self.ranks.shape[0], "Step"
+        )
+        self.chunk_labels = self._default_labels(
+            chunk_labels, self.ranks.shape[1], "Chunk"
+        )
         self.config = PlotConfig.from_kwargs(**kwargs)
 
         # Relevance
         self.relevant_chunks = relevant_chunks
         self.relevance_grades = relevance_grades
-        self._relevant_indices = _relevant_set(relevant_chunks, self.chunk_labels) if relevant_chunks else None
+        self._relevant_indices = (
+            _relevant_set(relevant_chunks, self.chunk_labels)
+            if relevant_chunks
+            else None
+        )
         self._relevance_grade_map = self._resolve_grades(relevance_grades)
 
         # Scores
@@ -72,7 +80,9 @@ class RankFlow:
 
         # Absent mask: True where rank is NaN
         self._absent_mask: np.ndarray | None = None
-        if np.issubdtype(self.ranks.dtype, np.floating) and np.any(np.isnan(self.ranks)):
+        if np.issubdtype(self.ranks.dtype, np.floating) and np.any(
+            np.isnan(self.ranks)
+        ):
             self._absent_mask = np.isnan(self.ranks)
             max_rank = np.nanmax(self.ranks)
             self.ranks = np.where(self._absent_mask, max_rank + 1, self.ranks)
@@ -138,6 +148,7 @@ class RankFlow:
         # Density mode -- uses a separate render path
         if mode == "density":
             from rankflow.plotting.matplotlib_backend import MatplotlibBackend
+
             renderer = MatplotlibBackend()
             relevant_idx = self._relevant_indices
             source_map = self._source_labels
@@ -166,20 +177,30 @@ class RankFlow:
         deltas = compute_rank_deltas(ranks) if self.config.show_deltas else None
 
         # Remap relevance indices to filtered space
-        relevant_idx = self._remap_relevant(kept_indices) if self._relevant_indices else None
-        grade_map = self._remap_grades(kept_indices) if self._relevance_grade_map else None
+        relevant_idx = (
+            self._remap_relevant(kept_indices) if self._relevant_indices else None
+        )
+        grade_map = (
+            self._remap_grades(kept_indices) if self._relevance_grade_map else None
+        )
 
         # Scores (filtered)
         scores = self.scores[:, kept_indices] if self.scores is not None else None
 
         # Absent mask (filtered)
-        absent_mask = self._absent_mask[:, kept_indices] if self._absent_mask is not None else None
+        absent_mask = (
+            self._absent_mask[:, kept_indices]
+            if self._absent_mask is not None
+            else None
+        )
 
         if backend == "plotly":
             from rankflow.plotting.plotly_backend import PlotlyBackend
+
             renderer = PlotlyBackend()
         else:
             from rankflow.plotting.matplotlib_backend import MatplotlibBackend
+
             renderer = MatplotlibBackend()
 
         return renderer.render(
@@ -204,7 +225,9 @@ class RankFlow:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def compare(a: RankFlow, b: RankFlow, labels: tuple = ("Pipeline A", "Pipeline B")) -> Any:
+    def compare(
+        a: RankFlow, b: RankFlow, labels: tuple = ("Pipeline A", "Pipeline B")
+    ) -> Any:
         """Side-by-side comparison of two RankFlow instances.
 
         Returns (fig, (ax_left, ax_right)).
@@ -215,7 +238,9 @@ class RankFlow:
 
         backend = MatplotlibBackend()
 
-        fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(14, max(5, 0.5 * a.ranks.shape[1])), sharey=True)
+        fig, (ax_left, ax_right) = plt.subplots(
+            1, 2, figsize=(14, max(5, 0.5 * a.ranks.shape[1])), sharey=True
+        )
 
         # Render pipeline A
         ax_left.invert_yaxis()
@@ -295,16 +320,27 @@ class RankFlow:
     def to_rankflow_json(self, path: str, query: str | None = None) -> None:
         """Export to RankFlow's own JSON interchange format."""
         from rankflow.adapters.json_common import save_rankflow_json
+
         save_rankflow_json(self, path, query=query)
 
-    def to_trec_run(self, path: str, run_id: str = "rankflow", step_index: int = -1, query_id: str = "q0") -> None:
+    def to_trec_run(
+        self,
+        path: str,
+        run_id: str = "rankflow",
+        step_index: int = -1,
+        query_id: str = "q0",
+    ) -> None:
         """Export a step as a TREC run file."""
         from rankflow.adapters.trec import save_trec_run
-        save_trec_run(self, path, run_id=run_id, step_index=step_index, query_id=query_id)
+
+        save_trec_run(
+            self, path, run_id=run_id, step_index=step_index, query_id=query_id
+        )
 
     def to_ranx_run(self, step_index: int = -1, query_id: str = "q0"):
         """Export a step as a ranx.Run object (requires ranx)."""
         from rankflow.adapters.ranx_adapter import to_ranx_run
+
         return to_ranx_run(self, step_index=step_index, query_id=query_id)
 
     # ------------------------------------------------------------------
@@ -315,24 +351,28 @@ class RankFlow:
     def from_trec_run(cls, paths, qrels_path=None, query_id=None):
         """Load from TREC run file(s). See adapters.trec.load_trec_run."""
         from rankflow.adapters.trec import load_trec_run
+
         return load_trec_run(paths, qrels_path=qrels_path, query_id=query_id)
 
     @classmethod
     def from_rankflow_json(cls, path: str):
         """Load from RankFlow JSON schema. See adapters.json_common."""
         from rankflow.adapters.json_common import load_rankflow_json
+
         return load_rankflow_json(path)
 
     @classmethod
     def from_ranx(cls, runs, qrels=None, step_labels=None, query_id=None):
         """Load from ranx Run/Qrels objects (requires ranx)."""
         from rankflow.adapters.ranx_adapter import from_ranx
+
         return from_ranx(runs, qrels=qrels, step_labels=step_labels, query_id=query_id)
 
     @classmethod
     def from_ragas(cls, dataset, step_label: str = "Retrieval"):
         """Load from RAGAS EvaluationDataset (requires ragas)."""
         from rankflow.adapters.ragas_adapter import from_ragas
+
         return from_ragas(dataset, step_label=step_label)
 
     # ------------------------------------------------------------------
@@ -361,7 +401,11 @@ class RankFlow:
         if self._relevance_grade_map is None:
             return None
         old_to_new = {old: new for new, old in enumerate(kept_indices)}
-        return {old_to_new[i]: g for i, g in self._relevance_grade_map.items() if i in old_to_new}
+        return {
+            old_to_new[i]: g
+            for i, g in self._relevance_grade_map.items()
+            if i in old_to_new
+        }
 
 
 def _render_on_axes(backend, rf, ax):
@@ -382,7 +426,9 @@ def _render_on_axes(backend, rf, ax):
     step_metrics = None
     if rf._relevant_indices is not None and rf.config.show_metrics:
         step_metrics = compute_metrics_per_step(
-            ranks, chunk_labels, list(rf._remap_relevant(kept)),
+            ranks,
+            chunk_labels,
+            list(rf._remap_relevant(kept)),
             k=rf.config.top_k or 5,
             relevance_grades=rf._remap_grades(kept),
         )

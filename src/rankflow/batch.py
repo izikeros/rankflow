@@ -79,7 +79,9 @@ class BatchRankFlow:
                 all_metrics.append(m)
 
         if not all_metrics:
-            raise ValueError("No metrics available. Ensure relevant_chunks is set on RankFlow objects.")
+            raise ValueError(
+                "No metrics available. Ensure relevant_chunks is set on RankFlow objects."
+            )
 
         n_steps = len(all_metrics[0])
         step_labels = self.rankflows[0].step_labels[:n_steps]
@@ -172,7 +174,9 @@ class BatchRankFlow:
         fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4 * nrows))
         axes_flat = axes.flatten() if hasattr(axes, "flatten") else [axes]
 
-        for idx, (key, title) in enumerate(zip(metric_keys, metric_titles)):
+        for idx, (key, title) in enumerate(
+            zip(metric_keys, metric_titles, strict=True)
+        ):
             ax = axes_flat[idx]
             data_per_step = []
             for step in range(n_steps):
@@ -185,7 +189,14 @@ class BatchRankFlow:
                 patch.set_alpha(0.7)
             # Mean line overlay
             means = [np.mean(v) for v in data_per_step]
-            ax.plot(range(1, n_steps + 1), means, "r--o", markersize=4, linewidth=1, label="mean")
+            ax.plot(
+                range(1, n_steps + 1),
+                means,
+                "r--o",
+                markersize=4,
+                linewidth=1,
+                label="mean",
+            )
             ax.set_title(title, fontsize=11)
             ax.set_ylim(-0.05, 1.05)
             ax.grid(axis="y", alpha=0.3)
@@ -204,7 +215,10 @@ class BatchRankFlow:
     # ------------------------------------------------------------------
 
     def win_loss_analysis(
-        self, metric: str = "ndcg_at_k", k: int = 10, tolerance: float = 1e-6,
+        self,
+        metric: str = "ndcg_at_k",
+        k: int = 10,
+        tolerance: float = 1e-6,
     ) -> list[dict[str, Any]]:
         """Count wins/losses/ties per step transition.
 
@@ -231,14 +245,16 @@ class BatchRankFlow:
                 else:
                     ties += 1
             total = wins + losses + ties
-            results.append({
-                "transition": f"{step_labels[s]} -> {step_labels[s + 1]}",
-                "wins": wins,
-                "losses": losses,
-                "ties": ties,
-                "win_pct": wins / total * 100 if total else 0,
-                "loss_pct": losses / total * 100 if total else 0,
-            })
+            results.append(
+                {
+                    "transition": f"{step_labels[s]} -> {step_labels[s + 1]}",
+                    "wins": wins,
+                    "losses": losses,
+                    "ties": ties,
+                    "win_pct": wins / total * 100 if total else 0,
+                    "loss_pct": losses / total * 100 if total else 0,
+                }
+            )
         return results
 
     # ------------------------------------------------------------------
@@ -246,7 +262,10 @@ class BatchRankFlow:
     # ------------------------------------------------------------------
 
     def plot_by_difficulty(
-        self, k: int = 10, metric: str = "ndcg_at_k", buckets: int = 3,
+        self,
+        k: int = 10,
+        metric: str = "ndcg_at_k",
+        buckets: int = 3,
     ) -> Any:
         """Segment queries by difficulty and show metric evolution per bucket.
 
@@ -266,9 +285,11 @@ class BatchRankFlow:
         final_scores = [m[-1][metric] for m in all_metrics]
         sorted_indices = np.argsort(final_scores)
         bucket_size = len(sorted_indices) // buckets
-        bucket_names = ["Hard", "Medium", "Easy"] if buckets == 3 else [
-            f"Bucket {i + 1}" for i in range(buckets)
-        ]
+        bucket_names = (
+            ["Hard", "Medium", "Easy"]
+            if buckets == 3
+            else [f"Bucket {i + 1}" for i in range(buckets)]
+        )
 
         fig, ax = plt.subplots(figsize=(max(6, 1.5 * n_steps), 5))
         x = np.arange(n_steps)
@@ -289,8 +310,15 @@ class BatchRankFlow:
 
             label = bucket_names[b] if b < len(bucket_names) else f"Bucket {b + 1}"
             color = colors[b % len(colors)]
-            ax.errorbar(x, means, yerr=stds, marker="o", capsize=4, label=f"{label} (n={len(bucket_indices)})",
-                        color=color)
+            ax.errorbar(
+                x,
+                means,
+                yerr=stds,
+                marker="o",
+                capsize=4,
+                label=f"{label} (n={len(bucket_indices)})",
+                color=color,
+            )
 
         ax.set_xticks(x)
         ax.set_xticklabels(step_labels, rotation=15)
@@ -305,7 +333,9 @@ class BatchRankFlow:
     # ------------------------------------------------------------------
 
     def plot_improvement_heatmap(
-        self, metric: str = "ndcg_at_k", k: int = 10,
+        self,
+        metric: str = "ndcg_at_k",
+        k: int = 10,
     ) -> Any:
         """Heatmap: rows=queries, cols=step transitions, color=metric delta.
 
@@ -326,7 +356,9 @@ class BatchRankFlow:
         delta_matrix = np.zeros((n_queries, n_transitions))
         for q in range(n_queries):
             for s in range(n_transitions):
-                delta_matrix[q, s] = all_metrics[q][s + 1][metric] - all_metrics[q][s][metric]
+                delta_matrix[q, s] = (
+                    all_metrics[q][s + 1][metric] - all_metrics[q][s][metric]
+                )
 
         # Sort by overall improvement (sum of deltas)
         sort_order = np.argsort(delta_matrix.sum(axis=1))
@@ -340,7 +372,9 @@ class BatchRankFlow:
         fig, ax = plt.subplots(figsize=(max(5, 2 * n_transitions), fig_height))
 
         vmax = max(abs(delta_matrix.min()), abs(delta_matrix.max()), 0.01)
-        im = ax.imshow(delta_matrix, aspect="auto", cmap="RdYlGn", vmin=-vmax, vmax=vmax)
+        im = ax.imshow(
+            delta_matrix, aspect="auto", cmap="RdYlGn", vmin=-vmax, vmax=vmax
+        )
         ax.set_xticks(range(n_transitions))
         ax.set_xticklabels(transition_labels, fontsize=8)
         ax.set_ylabel("Queries (sorted by total improvement)")
@@ -373,11 +407,13 @@ class BatchRankFlow:
             if delta < threshold:
                 rf = self.rankflows[idx]
                 label = getattr(rf, "query_label", None) or f"query_{idx}"
-                failures.append({
-                    "query_index": idx,
-                    "query_label": label,
-                    "initial_value": initial,
-                    "final_value": final,
-                    "delta": delta,
-                })
+                failures.append(
+                    {
+                        "query_index": idx,
+                        "query_label": label,
+                        "initial_value": initial,
+                        "final_value": final,
+                        "delta": delta,
+                    }
+                )
         return failures

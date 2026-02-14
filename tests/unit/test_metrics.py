@@ -13,10 +13,12 @@ from rankflow.metrics import (
 def _simple_ranks():
     # Step 0: doc order [0,1,2,3,4] (ranks = positions)
     # Step 1: doc order [2,0,1,4,3]
-    return np.array([
-        [0, 1, 2, 3, 4],
-        [1, 2, 0, 4, 3],
-    ])
+    return np.array(
+        [
+            [0, 1, 2, 3, 4],
+            [1, 2, 0, 4, 3],
+        ]
+    )
 
 
 def test_precision_at_k_perfect():

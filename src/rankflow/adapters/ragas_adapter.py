@@ -46,7 +46,9 @@ def from_ragas(
     elif hasattr(dataset, "__iter__"):
         samples = list(dataset)
     else:
-        raise TypeError(f"Expected RAGAS EvaluationDataset or list of samples, got {type(dataset)}")
+        raise TypeError(
+            f"Expected RAGAS EvaluationDataset or list of samples, got {type(dataset)}"
+        )
 
     rankflows: list[RankFlow] = []
     for i, sample in enumerate(samples):
@@ -66,13 +68,15 @@ def from_ragas(
         if reference:
             ref_set = set(reference)
             relevant_chunks = [
-                label for label, full_text in zip(chunk_labels, retrieved)
+                label
+                for label, full_text in zip(chunk_labels, retrieved, strict=False)
                 if full_text in ref_set
             ]
             # If exact match fails, try substring matching
             if not relevant_chunks:
                 relevant_chunks = [
-                    label for label, full_text in zip(chunk_labels, retrieved)
+                    label
+                    for label, full_text in zip(chunk_labels, retrieved, strict=False)
                     if any(ref in full_text or full_text in ref for ref in reference)
                 ]
 
