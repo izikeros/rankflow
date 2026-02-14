@@ -1,7 +1,14 @@
-# add version
-from ._version import __version__  # noqa: F401
+from ._version import __version__
+from .batch import BatchRankFlow
+from .config import PlotConfig
+from .core import RankFlow
+from .merge import MergeRankFlow, PipelineStep
 
-# add __all__
-__all__ = ["RankFlow"]  # noqa: F405
-
-from .main import RankFlow
+__all__ = [
+    "BatchRankFlow",
+    "MergeRankFlow",
+    "PipelineStep",
+    "PlotConfig",
+    "RankFlow",
+    "__version__",
+]
