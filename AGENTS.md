@@ -1,4 +1,4 @@
-# AGENTS.md
+# AI Agent Instructions
 
 ## Project Overview
 
@@ -9,67 +9,97 @@
 ```
 src/rankflow/
 ├── __init__.py              # Public API: RankFlow, BatchRankFlow, PlotConfig
-├── _version.py              # Single source of version (e.g. "0.2.0")
+├── _version.py              # Single source of version
 ├── core.py                  # RankFlow class - main orchestrator
-├── main.py                  # Backward-compat shim (re-exports RankFlow)
 ├── config.py                # PlotConfig dataclass
 ├── metrics.py               # Retrieval metrics (P@K, R@K, MRR, NDCG, MAP)
 ├── analysis.py              # Rank deltas, summary, top-K filtering
 ├── batch.py                 # BatchRankFlow for multi-query aggregation
 ├── export.py                # to_dict, to_dataframe, to_json utilities
+├── merge.py                 # MergeRankFlow for pipeline comparison
+├── adapters/                # Format adapters (TREC, RAGAS, ranx)
 └── plotting/
-    ├── __init__.py
     ├── base.py              # PlotBackend ABC
     ├── matplotlib_backend.py # Default matplotlib renderer
     └── plotly_backend.py    # Optional interactive plotly renderer
 tests/
-├── __init__.py
-├── e2e/
-│   └── test_main.py         # End-to-end visual tests
-└── unit/
-    ├── test_metrics.py
-    ├── test_analysis.py
-    ├── test_config.py
-    ├── test_export.py
-    └── test_batch.py
+├── e2e/                     # End-to-end visual tests
+└── unit/                    # Unit tests
+docs/                        # MkDocs documentation
+notebooks/                   # Tutorial notebooks
 ```
 
-## Key Commands
+## Development Commands
 
 ```bash
-# Run unit tests
-make test
-
-# Run end-to-end tests (opens matplotlib windows)
-make test-e2e
-
-# Lint
-make lint
-
-# Format
-make format
-
-# Type check
-make type
+make dev          # Set up development environment
+make test         # Run unit tests
+make test-e2e     # Run end-to-end tests
+make test-cov     # Run tests with coverage
+make lint         # Check code style
+make format       # Auto-format code
+make type-check   # Run type checker
+make security     # Run security checks
+make docs         # Build documentation
+make serve-docs   # Serve docs locally
+make commit       # Interactive conventional commit
 ```
 
-## Conventions
+## Tooling Stack
 
-- Python >=3.9 compatibility required
-- Formatter: black (88 char line length)
-- Linter: ruff (see ruff.toml for rule selection)
-- Import sorting: isort
-- Type hints used throughout; Optional types for nullable params
-- Dependencies: matplotlib + numpy are core; pandas and plotly are optional extras
-- Tests use pytest; e2e tests are in tests/e2e/, unit tests in tests/unit/
-- Version is stored in `src/rankflow/_version.py` AND `pyproject.toml` (keep in sync)
-- Build system: PDM
+- **Package Manager**: uv
+- **Build Backend**: Hatchling
+- **Linter/Formatter**: Ruff
+- **Type Checker**: ty (Astral)
+- **Testing**: pytest + pytest-cov
+- **Security**: bandit + pip-audit
+- **Documentation**: mkdocs-material
+
+## Code Conventions
+
+- Python >=3.10 required
+- Line length: 88 characters
+- Type hints: Required for all public functions
+- Docstrings: Google style
+- Import sorting: Handled by Ruff (isort rules)
+
+## Commit Convention
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add new feature
+fix: bug fix
+docs: documentation changes
+refactor: code refactoring
+test: add/update tests
+chore: maintenance tasks
+perf: performance improvements
+```
+
+**Important**: Never add `Co-authored-by` lines to commit messages.
 
 ## Architecture Notes
 
-- `PlotConfig` (dataclass) holds all visual configuration -- never use a mutable global dict.
-- `PlotBackend` (ABC) is the interface for renderers. New backends (e.g. SVG) can be added by implementing this interface.
-- `RankFlow.plot(backend="matplotlib"|"plotly")` selects the renderer at call time.
-- Metrics are pure functions in `metrics.py` -- stateless, easily testable.
-- `BatchRankFlow` aggregates across multiple `RankFlow` instances for multi-query evaluation.
-- All new features (highlighting, top-K, deltas, scores) are opt-in via constructor parameters or PlotConfig fields. The default `RankFlow(df=df).plot()` call remains backward-compatible.
+- `PlotConfig` (dataclass) holds all visual configuration
+- `PlotBackend` (ABC) is the interface for renderers
+- `RankFlow.plot(backend="matplotlib"|"plotly")` selects the renderer
+- Metrics are pure functions in `metrics.py` - stateless, easily testable
+- `BatchRankFlow` aggregates across multiple `RankFlow` instances
+- All new features are opt-in via constructor parameters
+
+## Testing Requirements
+
+- Maintain >80% code coverage
+- Run `make test-cov` before submitting PR
+- E2E tests are in tests/e2e/, unit tests in tests/unit/
+
+## Release Process
+
+Releases are automated via GitHub Actions when a version tag is pushed:
+
+```bash
+make release-patch  # 0.1.0 → 0.1.1
+make release-minor  # 0.1.0 → 0.2.0
+make release-major  # 0.1.0 → 1.0.0
+```
