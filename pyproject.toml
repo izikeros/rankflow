@@ -49,10 +49,14 @@ pandas = ["pandas>=2.0"]
 interactive = ["plotly>=5.0"]
 ranx = ["ranx>=0.3"]
 ragas = ["ragas>=0.1"]
+ui = ["streamlit>=1.30"]
 all = [
     "pandas>=2.0",
     "plotly>=5.0",
 ]
+
+[project.scripts]
+rankflow = "rankflow.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/izikeros/rankflow"
