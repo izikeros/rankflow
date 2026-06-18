@@ -76,6 +76,10 @@ class PlotConfig:
     density_band_color: str = "gray"
     density_focus_k: int = 10
 
+    # Document label properties
+    left_label_key: str | None = None
+    right_label_key: str | None = None
+
     # Source provenance
     source_markers: dict[str, str] = field(
         default_factory=lambda: {

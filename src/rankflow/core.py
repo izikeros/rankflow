@@ -39,6 +39,8 @@ class RankFlow:
         relevance_grades: dict[str | int, float] | None = None,
         scores: np.ndarray | None = None,
         source_labels: dict[str | int, str] | None = None,
+        pipeline_config: dict[str, Any] | None = None,
+        chunk_properties: dict[str, list[str]] | None = None,
         **kwargs,
     ):
         if df is not None:
@@ -62,12 +64,22 @@ class RankFlow:
         )
         self.config = PlotConfig.from_kwargs(**kwargs)
 
+        # Document label properties
+        if chunk_properties is not None:
+            for key, values in chunk_properties.items():
+                if len(values) != len(self.chunk_labels):
+                    raise ValueError(
+                        f"chunk_properties['{key}'] length ({len(values)}) "
+                        f"must match chunk_labels length ({len(self.chunk_labels)})"
+                    )
+        self._chunk_properties = chunk_properties
+
         # Relevance
         self.relevant_chunks = relevant_chunks
         self.relevance_grades = relevance_grades
         self._relevant_indices = (
             _relevant_set(relevant_chunks, self.chunk_labels)
-            if relevant_chunks
+            if relevant_chunks is not None
             else None
         )
         self._relevance_grade_map = self._resolve_grades(relevance_grades)
@@ -77,6 +89,9 @@ class RankFlow:
 
         # Source provenance
         self._source_labels = self._resolve_labels_map(source_labels)
+
+        # Pipeline config metadata (for experiment tracking)
+        self.pipeline_config = dict(pipeline_config) if pipeline_config else None
 
         # Absent mask: True where rank is NaN
         self._absent_mask: np.ndarray | None = None
@@ -118,6 +133,22 @@ class RankFlow:
         return result
 
     # ------------------------------------------------------------------
+    # Label resolution
+    # ------------------------------------------------------------------
+
+    def _get_labels_for_key(self, key: str | None) -> list[str]:
+        """Resolve a label key to a list of display labels."""
+        if key and self._chunk_properties and key in self._chunk_properties:
+            return self._chunk_properties[key]
+        return self.chunk_labels
+
+    def _get_left_labels(self) -> list[str]:
+        return self._get_labels_for_key(self.config.left_label_key)
+
+    def _get_right_labels(self) -> list[str]:
+        return self._get_labels_for_key(self.config.right_label_key)
+
+    # ------------------------------------------------------------------
     # Plotting
     # ------------------------------------------------------------------
 
@@ -145,6 +176,10 @@ class RankFlow:
         else:
             ranks, chunk_labels, kept_indices = self._apply_top_k()
 
+        # Resolve display labels
+        full_left = self._get_left_labels()
+        full_right = self._get_right_labels()
+
         # Density mode -- uses a separate render path
         if mode == "density":
             from rankflow.plotting.matplotlib_backend import MatplotlibBackend
@@ -152,6 +187,7 @@ class RankFlow:
             renderer = MatplotlibBackend()
             relevant_idx = self._relevant_indices
             source_map = self._source_labels
+            right_labels = full_right if full_right is not self.chunk_labels else None
             return renderer.render_density(
                 ranks=ranks,
                 step_labels=self.step_labels,
@@ -160,6 +196,7 @@ class RankFlow:
                 relevant_indices=relevant_idx,
                 source_labels=source_map,
                 focus_k=self.config.density_focus_k,
+                right_labels=right_labels,
             )
 
         # Compute per-step metrics if relevant_chunks provided and show_metrics
@@ -203,6 +240,18 @@ class RankFlow:
 
             renderer = MatplotlibBackend()
 
+        # Filter display labels to match kept_indices
+        left_labels = (
+            [full_left[i] for i in kept_indices]
+            if full_left is not self.chunk_labels
+            else None
+        )
+        right_labels = (
+            [full_right[i] for i in kept_indices]
+            if full_right is not self.chunk_labels
+            else None
+        )
+
         return renderer.render(
             ranks=ranks,
             step_labels=self.step_labels,
@@ -214,6 +263,8 @@ class RankFlow:
             step_metrics=step_metrics,
             deltas=deltas,
             absent_mask=absent_mask,
+            left_labels=left_labels,
+            right_labels=right_labels,
         )
 
     def iplot(self) -> Any:
@@ -433,6 +484,19 @@ def _render_on_axes(backend, rf, ax):
             relevance_grades=rf._remap_grades(kept),
         )
 
+    full_left = rf._get_left_labels()
+    full_right = rf._get_right_labels()
+    left_labels = (
+        [full_left[i] for i in kept]
+        if full_left is not rf.chunk_labels
+        else None
+    )
+    right_labels = (
+        [full_right[i] for i in kept]
+        if full_right is not rf.chunk_labels
+        else None
+    )
+
     backend.render(
         ranks=ranks,
         step_labels=rf.step_labels,
@@ -444,6 +508,8 @@ def _render_on_axes(backend, rf, ax):
         step_metrics=step_metrics,
         deltas=deltas,
         absent_mask=absent_mask,
+        left_labels=left_labels,
+        right_labels=right_labels,
     )
 
     plt.subplots = original_subplots

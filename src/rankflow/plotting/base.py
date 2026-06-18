@@ -26,6 +26,8 @@ class PlotBackend(ABC):
         step_metrics: list[dict[str, float]] | None = None,
         deltas: np.ndarray | None = None,
         absent_mask: np.ndarray | None = None,
+        left_labels: list[str] | None = None,
+        right_labels: list[str] | None = None,
     ) -> Any:
         """Render the rankflow plot and return the figure/axes or equivalent."""
         ...

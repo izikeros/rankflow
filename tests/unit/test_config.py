@@ -36,3 +36,22 @@ def test_instances_are_independent():
     c2 = PlotConfig()
     c1.colors.append("extra_color")
     assert "extra_color" not in c2.colors
+
+
+def test_label_key_defaults():
+    c = PlotConfig()
+    assert c.left_label_key is None
+    assert c.right_label_key is None
+
+
+def test_label_key_from_kwargs():
+    c = PlotConfig.from_kwargs(left_label_key="title", right_label_key="short")
+    assert c.left_label_key == "title"
+    assert c.right_label_key == "short"
+
+
+def test_label_key_override():
+    c = PlotConfig()
+    c2 = c.override(left_label_key="title")
+    assert c2.left_label_key == "title"
+    assert c.left_label_key is None

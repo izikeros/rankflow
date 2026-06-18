@@ -24,6 +24,8 @@ class MatplotlibBackend(PlotBackend):
         step_metrics: list[dict[str, float]] | None = None,
         deltas: np.ndarray | None = None,
         absent_mask: np.ndarray | None = None,
+        left_labels: list[str] | None = None,
+        right_labels: list[str] | None = None,
     ) -> Any:
         fig, axs = self._initialize_plot(ranks, config)
 
@@ -45,7 +47,10 @@ class MatplotlibBackend(PlotBackend):
             absent_mask,
         )
         self._add_step_lines_and_labels(axs, ranks, step_labels, config)
-        self._add_chunk_labels(axs, ranks, chunk_labels, step_labels, config)
+        self._add_chunk_labels(
+            axs, ranks, chunk_labels, step_labels, config,
+            left_labels=left_labels, right_labels=right_labels,
+        )
         self._add_rank_text(axs, ranks, step_labels, chunk_labels, config, absent_mask)
 
         if config.show_deltas and deltas is not None:
@@ -206,21 +211,26 @@ class MatplotlibBackend(PlotBackend):
                 ha="center",
             )
 
-    def _add_chunk_labels(self, axs, ranks, chunk_labels, step_labels, config):
+    def _add_chunk_labels(
+        self, axs, ranks, chunk_labels, step_labels, config,
+        left_labels=None, right_labels=None,
+    ):
+        ll = left_labels if left_labels is not None else chunk_labels
+        rl = right_labels if right_labels is not None else chunk_labels
         n_chunks = len(chunk_labels)
         n_steps = len(step_labels)
         for i in range(n_chunks):
             axs.text(
                 -config.x_axis_limit_offset,
                 ranks[0, i],
-                chunk_labels[i],
+                ll[i],
                 fontsize=config.chunk_label_font_size,
                 ha="right",
             )
             axs.text(
                 n_steps - 1 + config.x_axis_limit_offset,
                 ranks[-1, i],
-                chunk_labels[i],
+                rl[i],
                 fontsize=config.chunk_label_font_size,
                 ha="left",
             )
@@ -355,6 +365,7 @@ class MatplotlibBackend(PlotBackend):
         relevant_indices: set[int] | None = None,
         source_labels: dict[int, str] | None = None,
         focus_k: int | None = None,
+        right_labels: list[str] | None = None,
     ) -> Any:
         """Render a density-band plot suitable for 100+ documents.
 
@@ -441,10 +452,11 @@ class MatplotlibBackend(PlotBackend):
                     )
 
             # Label at the end
+            rl = right_labels if right_labels is not None else chunk_labels
             axs.text(
                 n_steps - 1 + config.x_axis_limit_offset,
                 ranks[-1, i],
-                chunk_labels[i],
+                rl[i],
                 fontsize=config.chunk_label_font_size,
                 ha="left",
                 alpha=alpha,

@@ -105,3 +105,72 @@ def test_nan_absent_mask():
     assert rf._absent_mask is not None
     assert rf._absent_mask[0, 2] is np.True_
     assert rf._absent_mask[1, 1] is np.True_
+
+
+# --- chunk_properties tests ---
+
+
+def test_chunk_properties_stored():
+    rf = RankFlow(
+        ranks=np.array([[1, 2], [2, 1]]),
+        chunk_labels=["id_1", "id_2"],
+        chunk_properties={"title": ["Doc A", "Doc B"]},
+    )
+    assert rf._chunk_properties == {"title": ["Doc A", "Doc B"]}
+
+
+def test_chunk_properties_none_by_default():
+    rf = RankFlow(ranks=np.array([[1, 2], [2, 1]]))
+    assert rf._chunk_properties is None
+
+
+def test_chunk_properties_length_mismatch():
+    with pytest.raises(ValueError, match="chunk_properties.*length"):
+        RankFlow(
+            ranks=np.array([[1, 2], [2, 1]]),
+            chunk_labels=["id_1", "id_2"],
+            chunk_properties={"title": ["Doc A"]},
+        )
+
+
+def test_get_labels_default_fallback():
+    rf = RankFlow(
+        ranks=np.array([[1, 2], [2, 1]]),
+        chunk_labels=["id_1", "id_2"],
+    )
+    assert rf._get_left_labels() == ["id_1", "id_2"]
+    assert rf._get_right_labels() == ["id_1", "id_2"]
+
+
+def test_get_labels_with_properties():
+    rf = RankFlow(
+        ranks=np.array([[1, 2], [2, 1]]),
+        chunk_labels=["id_1", "id_2"],
+        chunk_properties={
+            "title": ["Planning Materiality", "Risk Assessment"],
+            "short": ["PM", "RA"],
+        },
+        left_label_key="short",
+        right_label_key="title",
+    )
+    assert rf._get_left_labels() == ["PM", "RA"]
+    assert rf._get_right_labels() == ["Planning Materiality", "Risk Assessment"]
+
+
+def test_get_labels_invalid_key_falls_back():
+    rf = RankFlow(
+        ranks=np.array([[1, 2], [2, 1]]),
+        chunk_labels=["id_1", "id_2"],
+        chunk_properties={"title": ["Doc A", "Doc B"]},
+        left_label_key="nonexistent",
+    )
+    assert rf._get_left_labels() == ["id_1", "id_2"]
+
+
+def test_get_labels_no_properties_with_key():
+    rf = RankFlow(
+        ranks=np.array([[1, 2], [2, 1]]),
+        chunk_labels=["id_1", "id_2"],
+        left_label_key="title",
+    )
+    assert rf._get_left_labels() == ["id_1", "id_2"]

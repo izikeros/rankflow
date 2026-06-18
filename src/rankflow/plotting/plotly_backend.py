@@ -33,6 +33,8 @@ class PlotlyBackend(PlotBackend):
         step_metrics: list[dict[str, float]] | None = None,
         deltas: np.ndarray | None = None,
         absent_mask: np.ndarray | None = None,
+        left_labels: list[str] | None = None,
+        right_labels: list[str] | None = None,
     ) -> Any:
         _ensure_plotly()
         import plotly.graph_objects as go
@@ -43,6 +45,9 @@ class PlotlyBackend(PlotBackend):
         has_relevance = relevant_indices is not None
 
         fig = go.Figure()
+
+        ll = left_labels if left_labels is not None else chunk_labels
+        rl = right_labels if right_labels is not None else chunk_labels
 
         for i in range(n_chunks):
             is_relevant = has_relevance and i in relevant_indices
@@ -62,10 +67,14 @@ class PlotlyBackend(PlotBackend):
             hover_texts = []
             for step_idx in range(n_steps):
                 parts = [
-                    f"<b>{chunk_labels[i]}</b>",
+                    f"<b>{ll[i]}</b>",
+                ]
+                if rl[i] != ll[i]:
+                    parts.append(f"{rl[i]}")
+                parts.extend([
                     f"Step: {step_labels[step_idx]}",
                     f"Rank: {int(ranks[step_idx, i])}",
-                ]
+                ])
                 if scores is not None:
                     parts.append(f"Score: {scores[step_idx, i]:.4f}")
                 if deltas is not None and step_idx > 0:
@@ -86,7 +95,7 @@ class PlotlyBackend(PlotBackend):
                     x=list(range(n_steps)),
                     y=y_data,
                     mode="lines+markers",
-                    name=chunk_labels[i],
+                    name=ll[i],
                     line={"color": color, "width": lw, "dash": dash},
                     opacity=alpha,
                     hovertext=hover_texts,

@@ -75,6 +75,9 @@ def save_rankflow_json(
             relevant.append(entry)
         data["relevant"] = relevant
 
+    if rf.pipeline_config:
+        data["pipeline_config"] = rf.pipeline_config
+
     with open(path, "w") as f:
         json.dump(data, f, indent=2, default=str)
 
@@ -132,7 +135,7 @@ def load_rankflow_json(path: str | Path):
             r["id"]: r["grade"] for r in data["relevant"] if "grade" in r
         }
 
-    return RankFlow(
+    rf = RankFlow(
         ranks=ranks,
         step_labels=step_labels,
         chunk_labels=all_chunks,
@@ -140,4 +143,6 @@ def load_rankflow_json(path: str | Path):
         relevance_grades=relevance_grades or None,
         scores=scores if has_scores else None,
         source_labels=source_labels or None,
+        pipeline_config=data.get("pipeline_config"),
     )
+    return rf
