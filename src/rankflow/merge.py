@@ -301,7 +301,11 @@ class MergeRankFlow:
         legend_handles: list = []
         for pname, ls in parent_style.items():
             handle = mlines.Line2D(
-                [], [], color="gray", linestyle=ls, linewidth=2,
+                [],
+                [],
+                color="gray",
+                linestyle=ls,
+                linewidth=2,
                 label=f"from {pname}",
             )
             legend_handles.append(handle)
@@ -321,7 +325,16 @@ class MergeRankFlow:
 
                 ax.plot(x_pos, rank, "o", color=color, markersize=4, alpha=alpha)
                 self._draw_parent_connections(
-                    ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k,
+                    ax,
+                    step,
+                    label,
+                    rank,
+                    x_pos,
+                    step_x,
+                    color,
+                    alpha,
+                    lw,
+                    top_k,
                     parent_style,
                 )
 
@@ -344,7 +357,17 @@ class MergeRankFlow:
         return legend_handles
 
     def _draw_parent_connections(
-        self, ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k,
+        self,
+        ax,
+        step,
+        label,
+        rank,
+        x_pos,
+        step_x,
+        color,
+        alpha,
+        lw,
+        top_k,
         parent_style,
     ):
         """Draw lines from parent steps to the current step for a given doc.

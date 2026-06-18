@@ -177,14 +177,16 @@ class ExperimentStore:
                 data = json.load(f)
             if tag and tag not in data.get("tags", []):
                 continue
-            results.append({
-                "name": data["name"],
-                "timestamp": data.get("timestamp", ""),
-                "tags": data.get("tags", []),
-                "description": data.get("description", ""),
-                "n_queries": data.get("n_queries", 0),
-                "config": data.get("config", {}),
-            })
+            results.append(
+                {
+                    "name": data["name"],
+                    "timestamp": data.get("timestamp", ""),
+                    "tags": data.get("tags", []),
+                    "description": data.get("description", ""),
+                    "n_queries": data.get("n_queries", 0),
+                    "config": data.get("config", {}),
+                }
+            )
         return results
 
     def delete(self, name: str) -> None:

@@ -66,7 +66,9 @@ def _page_experiments(store: ExperimentStore):
 
     experiments = store.list()
     if not experiments:
-        st.info(f"No experiments found in `{store.path}`. Save one with `ExperimentStore.save()`.")
+        st.info(
+            f"No experiments found in `{store.path}`. Save one with `ExperimentStore.save()`."
+        )
         return
 
     tag_filter = st.sidebar.text_input("Filter by tag")
@@ -76,14 +78,18 @@ def _page_experiments(store: ExperimentStore):
     # Build table data
     rows = []
     for exp in experiments:
-        config_summary = ", ".join(f"{k}={v}" for k, v in list(exp["config"].items())[:3])
-        rows.append({
-            "Name": exp["name"],
-            "Queries": exp["n_queries"],
-            "Tags": ", ".join(exp.get("tags", [])),
-            "Config": config_summary,
-            "Timestamp": exp.get("timestamp", ""),
-        })
+        config_summary = ", ".join(
+            f"{k}={v}" for k, v in list(exp["config"].items())[:3]
+        )
+        rows.append(
+            {
+                "Name": exp["name"],
+                "Queries": exp["n_queries"],
+                "Tags": ", ".join(exp.get("tags", [])),
+                "Config": config_summary,
+                "Timestamp": exp.get("timestamp", ""),
+            }
+        )
 
     st.dataframe(rows, use_container_width=True)
 
@@ -139,17 +145,21 @@ def _page_compare(store: ExperimentStore):
             st.subheader("Configuration Differences")
             diff_rows = []
             for key, vals in report.config_diff.items():
-                diff_rows.append({
-                    "Parameter": key,
-                    "Baseline": str(vals["baseline"]),
-                    "Challenger": str(vals["challenger"]),
-                })
+                diff_rows.append(
+                    {
+                        "Parameter": key,
+                        "Baseline": str(vals["baseline"]),
+                        "Challenger": str(vals["challenger"]),
+                    }
+                )
             st.table(diff_rows)
 
         # Metric deltas
         st.subheader("Metric Comparison")
         metric_cols = st.columns(len(report.metric_deltas))
-        for col, (metric, data) in zip(metric_cols, report.metric_deltas.items(), strict=True):
+        for col, (metric, data) in zip(
+            metric_cols, report.metric_deltas.items(), strict=True
+        ):
             delta = data["delta"]
             p_val = data["p_value"]
             sig = "✓" if p_val < 0.05 else ""
@@ -206,19 +216,24 @@ def _page_query_explorer(store: ExperimentStore):
         label = getattr(rf, "query_label", None) or f"query_{i}"
         m = rf.metrics(k=k)
         final = m[-1] if m else {}
-        query_data.append({
-            "Query": label,
-            "Steps": rf.ranks.shape[0],
-            "Docs": rf.ranks.shape[1],
-            "NDCG@K": f"{final.get('ndcg_at_k', 0):.3f}" if final else "N/A",
-            "MRR": f"{final.get('mrr', 0):.3f}" if final else "N/A",
-            "P@K": f"{final.get('precision_at_k', 0):.3f}" if final else "N/A",
-        })
+        query_data.append(
+            {
+                "Query": label,
+                "Steps": rf.ranks.shape[0],
+                "Docs": rf.ranks.shape[1],
+                "NDCG@K": f"{final.get('ndcg_at_k', 0):.3f}" if final else "N/A",
+                "MRR": f"{final.get('mrr', 0):.3f}" if final else "N/A",
+                "P@K": f"{final.get('precision_at_k', 0):.3f}" if final else "N/A",
+            }
+        )
 
     st.dataframe(query_data, use_container_width=True)
 
     # Drill-down: select a query and show its rank flow plot
-    query_labels = [getattr(rf, "query_label", None) or f"query_{i}" for i, rf in enumerate(exp.rankflows)]
+    query_labels = [
+        getattr(rf, "query_label", None) or f"query_{i}"
+        for i, rf in enumerate(exp.rankflows)
+    ]
     selected_query = st.selectbox("Select query for detail view", query_labels)
 
     if selected_query:

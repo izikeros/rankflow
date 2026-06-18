@@ -104,9 +104,7 @@ def compare_experiments(
         ComparisonReport with metric deltas, per-query diffs, and
         statistical significance.
     """
-    config_diff = _diff_configs(
-        baseline.config or {}, challenger.config or {}
-    )
+    config_diff = _diff_configs(baseline.config or {}, challenger.config or {})
 
     # Build query label -> index mapping for matching
     base_by_label = {}

@@ -71,10 +71,12 @@ class PlotlyBackend(PlotBackend):
                 ]
                 if rl[i] != ll[i]:
                     parts.append(f"{rl[i]}")
-                parts.extend([
-                    f"Step: {step_labels[step_idx]}",
-                    f"Rank: {int(ranks[step_idx, i])}",
-                ])
+                parts.extend(
+                    [
+                        f"Step: {step_labels[step_idx]}",
+                        f"Rank: {int(ranks[step_idx, i])}",
+                    ]
+                )
                 if scores is not None:
                     parts.append(f"Score: {scores[step_idx, i]:.4f}")
                 if deltas is not None and step_idx > 0:

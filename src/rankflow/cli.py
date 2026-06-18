@@ -43,8 +43,13 @@ def _launch_ui():
     store_path = sys.argv[2] if len(sys.argv) > 2 else "./experiments"
 
     cmd = [
-        sys.executable, "-m", "streamlit", "run",
-        str(app_path), "--", store_path,
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(app_path),
+        "--",
+        store_path,
     ]
     # Fixed argv list (shell=False); only store_path is user-supplied and is
     # passed as a positional arg to the app, not interpreted by a shell.

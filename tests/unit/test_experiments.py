@@ -49,9 +49,7 @@ class TestExperiment:
         assert loaded.tags == exp.tags
         assert loaded.n_queries == 2
         assert loaded.rankflows[0].query_label == "q0"
-        np.testing.assert_array_equal(
-            loaded.rankflows[0].ranks, exp.rankflows[0].ranks
-        )
+        np.testing.assert_array_equal(loaded.rankflows[0].ranks, exp.rankflows[0].ranks)
 
     def test_metrics_summary(self):
         exp = Experiment(

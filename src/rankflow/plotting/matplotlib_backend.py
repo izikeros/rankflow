@@ -48,8 +48,13 @@ class MatplotlibBackend(PlotBackend):
         )
         self._add_step_lines_and_labels(axs, ranks, step_labels, config)
         self._add_chunk_labels(
-            axs, ranks, chunk_labels, step_labels, config,
-            left_labels=left_labels, right_labels=right_labels,
+            axs,
+            ranks,
+            chunk_labels,
+            step_labels,
+            config,
+            left_labels=left_labels,
+            right_labels=right_labels,
         )
         self._add_rank_text(axs, ranks, step_labels, chunk_labels, config, absent_mask)
 
@@ -212,8 +217,14 @@ class MatplotlibBackend(PlotBackend):
             )
 
     def _add_chunk_labels(
-        self, axs, ranks, chunk_labels, step_labels, config,
-        left_labels=None, right_labels=None,
+        self,
+        axs,
+        ranks,
+        chunk_labels,
+        step_labels,
+        config,
+        left_labels=None,
+        right_labels=None,
     ):
         ll = left_labels if left_labels is not None else chunk_labels
         rl = right_labels if right_labels is not None else chunk_labels

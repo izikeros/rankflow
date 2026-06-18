@@ -487,14 +487,10 @@ def _render_on_axes(backend, rf, ax):
     full_left = rf._get_left_labels()
     full_right = rf._get_right_labels()
     left_labels = (
-        [full_left[i] for i in kept]
-        if full_left is not rf.chunk_labels
-        else None
+        [full_left[i] for i in kept] if full_left is not rf.chunk_labels else None
     )
     right_labels = (
-        [full_right[i] for i in kept]
-        if full_right is not rf.chunk_labels
-        else None
+        [full_right[i] for i in kept] if full_right is not rf.chunk_labels else None
     )
 
     backend.render(
