@@ -102,3 +102,49 @@ def test_rank_correlation():
 def test_empty_pipeline():
     with pytest.raises(ValueError):
         MergeRankFlow(steps=[])
+
+
+def test_plot_branch_linestyles():
+    """Lines from different parent branches should have distinct line styles."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+
+    p = _pipeline()
+    fig, ax = p.plot(top_k=5)
+
+    # Collect line styles from all Line2D objects that connect parent->merge
+    # (i.e., lines with exactly 2 x-values spanning different positions)
+    styles_seen: set[str] = set()
+    for line in ax.get_lines():
+        xdata = line.get_xdata()
+        if len(xdata) == 2 and xdata[0] != xdata[1]:
+            ls = line.get_linestyle()
+            styles_seen.add(ls)
+
+    # We expect at least 2 distinct styles (solid for BM25, dashed for Vector)
+    assert len(styles_seen) >= 2, f"Expected >=2 distinct styles, got {styles_seen}"
+
+    import matplotlib.pyplot as plt
+
+    plt.close(fig)
+
+
+def test_plot_branch_legend():
+    """Merge plot should include a legend with branch names."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+
+    p = _pipeline()
+    fig, ax = p.plot(top_k=5)
+
+    legend = ax.get_legend()
+    assert legend is not None
+    legend_texts = [t.get_text() for t in legend.get_texts()]
+    assert any("BM25" in t for t in legend_texts)
+    assert any("Vector" in t for t in legend_texts)
+
+    import matplotlib.pyplot as plt
+
+    plt.close(fig)

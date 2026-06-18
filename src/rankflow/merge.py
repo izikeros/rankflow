@@ -7,6 +7,8 @@ from typing import Any
 
 import numpy as np
 
+BRANCH_LINESTYLES = ["-", "--", "-.", ":"]
+
 
 @dataclass
 class PipelineStep:
@@ -224,7 +226,11 @@ class MergeRankFlow:
             ax.text(x, -1.5, name, fontsize=10, ha="center", fontweight="bold")
 
         chunk_color = self._assign_chunk_colors(top_k)
-        self._draw_step_lines(ax, step_x, chunk_color, top_k, relevant_chunks)
+        legend_handles = self._draw_step_lines(
+            ax, step_x, chunk_color, top_k, relevant_chunks
+        )
+        if legend_handles:
+            ax.legend(handles=legend_handles, fontsize=8, loc="lower right")
 
         ax.set_xlim(-0.5, max_level + 0.8)
         ax.set_ylabel("Rank")
@@ -272,7 +278,34 @@ class MergeRankFlow:
         return chunk_color
 
     def _draw_step_lines(self, ax, step_x, chunk_color, top_k, relevant_chunks):
-        """Draw doc dots and connecting lines for each step."""
+        """Draw doc dots and connecting lines for each step.
+
+        Returns a list of legend handles for branch line styles.
+        """
+        import matplotlib.lines as mlines
+
+        # Build a stable parent -> linestyle mapping across all merge points
+        parent_style: dict[str, str] = {}
+        style_idx = 0
+        for sn in self._step_order:
+            s = self.steps[sn]
+            if len(s.parents) > 1:
+                for pname in s.parents:
+                    if pname not in parent_style:
+                        parent_style[pname] = BRANCH_LINESTYLES[
+                            style_idx % len(BRANCH_LINESTYLES)
+                        ]
+                        style_idx += 1
+
+        # Build legend handles from the stable mapping
+        legend_handles: list = []
+        for pname, ls in parent_style.items():
+            handle = mlines.Line2D(
+                [], [], color="gray", linestyle=ls, linewidth=2,
+                label=f"from {pname}",
+            )
+            legend_handles.append(handle)
+
         for step_name in self._step_order:
             step = self.steps[step_name]
             x_pos = step_x[step_name]
@@ -288,7 +321,8 @@ class MergeRankFlow:
 
                 ax.plot(x_pos, rank, "o", color=color, markersize=4, alpha=alpha)
                 self._draw_parent_connections(
-                    ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k
+                    ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k,
+                    parent_style,
                 )
 
             # Label top docs at leaf steps (no children)
@@ -307,11 +341,20 @@ class MergeRankFlow:
                         alpha=0.7,
                     )
 
+        return legend_handles
+
     def _draw_parent_connections(
-        self, ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k
+        self, ax, step, label, rank, x_pos, step_x, color, alpha, lw, top_k,
+        parent_style,
     ):
-        """Draw lines from parent steps to the current step for a given doc."""
+        """Draw lines from parent steps to the current step for a given doc.
+
+        Each parent branch gets a distinct line style so that lines from
+        different sources (e.g., text search vs. vector search) are
+        visually distinguishable at merge points.
+        """
         for parent_name in step.parents:
+            ls = parent_style.get(parent_name, "-")
             parent = self.steps[parent_name]
             parent_label_to_rank = dict(
                 zip(parent.chunk_labels, parent.ranks, strict=True)
@@ -325,6 +368,7 @@ class MergeRankFlow:
                         color=color,
                         alpha=alpha,
                         linewidth=lw,
+                        linestyle=ls,
                         solid_capstyle="round",
                     )
             else:
@@ -334,7 +378,7 @@ class MergeRankFlow:
                     color=color,
                     alpha=alpha * 0.5,
                     linewidth=lw,
-                    linestyle="--",
+                    linestyle=":",
                     solid_capstyle="round",
                 )
 
