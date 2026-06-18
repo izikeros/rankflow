@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import subprocess
+import subprocess  # nosec B404 - used only to launch the bundled Streamlit app
 import sys
 from pathlib import Path
 
@@ -46,7 +46,9 @@ def _launch_ui():
         sys.executable, "-m", "streamlit", "run",
         str(app_path), "--", store_path,
     ]
-    sys.exit(subprocess.call(cmd))
+    # Fixed argv list (shell=False); only store_path is user-supplied and is
+    # passed as a positional arg to the app, not interpreted by a shell.
+    sys.exit(subprocess.call(cmd))  # nosec B603
 
 
 def _print_help():
