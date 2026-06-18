@@ -2,7 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.2.1] - 2026-06-18
+
+### Bug Fixes
+
+- Suppress false-positive bandit subprocess warnings in cli
+- Use raw string for regex pattern in pytest.raises match (RUF043)
+
+### Documentation
+
+- Update README and add experiment/UI notebooks
+
+### Features
+
+- Add chunk label properties and pipeline_config metadata
+- Add experiment tracking and comparison
+- Add CLI and Streamlit web UI
+- Distinguish merge branches with line styles and legend
+
+### Styling
+
+- Apply ruff formatting
+
+## [0.2.0] - 2026-02-14
 
 ### Build
 
@@ -17,6 +39,7 @@ All notable changes to this project will be documented in this file.
 
 - Add tutorial notebook series and demo
 - Add mkdocs documentation with Material theme
+- Regenerate CHANGELOG.md with git-cliff
 
 ### Features
 
