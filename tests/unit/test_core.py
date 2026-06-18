@@ -125,7 +125,7 @@ def test_chunk_properties_none_by_default():
 
 
 def test_chunk_properties_length_mismatch():
-    with pytest.raises(ValueError, match="chunk_properties.*length"):
+    with pytest.raises(ValueError, match=r"chunk_properties.*length"):
         RankFlow(
             ranks=np.array([[1, 2], [2, 1]]),
             chunk_labels=["id_1", "id_2"],
